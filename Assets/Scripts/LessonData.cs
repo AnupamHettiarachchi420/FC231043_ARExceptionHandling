@@ -61,6 +61,7 @@ public static class Lessons
         {
             case LessonId.Scene1_NormalFlow: return NormalFlow();
             case LessonId.Scene2_TryCatch: return TryCatch();
+            case LessonId.Scene3_Propagation: return Propagation();
             default: return NormalFlow();   // scenes 2 to 5 are added later
         }
     }
@@ -154,6 +155,59 @@ public static class Lessons
                     new[] { "print(\"OK\")", "print(\"Caught\")", "print(\"End\")" }, 1),
                 new LessonQuestion(6, "After the catch block finishes, what happens?",
                     new[] { "The program crashes", "The program continues with print(\"End\")", "The try block runs again" }, 1)
+            }
+        };
+    }
+    private static Lesson Propagation()
+    {
+        return new Lesson
+        {
+            title = "Propagation",
+            rootFrame = "main()",
+            rootHasTry = false,
+            code = new[]
+            {
+                "main: checkout();",
+                "checkout: try { calculateTotal(); }",
+                "calculateTotal: divide(10, 0);",
+                "divide: return a / b;",
+                "checkout: catch (ArithmeticException e) {",
+                "    print(\"Handled\"); }",
+                "main: print(\"End\");"
+            },
+            steps = new[]
+            {
+                new LessonStep(0, StepKind.Call, "checkout()",
+                    "main calls checkout. checkout has a try block, so its frame is teal.", true),
+                new LessonStep(1, StepKind.Call, "calculateTotal()",
+                    "Inside its try block, checkout calls calculateTotal."),
+                new LessonStep(2, StepKind.Call, "divide(10, 0)",
+                    "calculateTotal calls divide with b = 0. The call stack is now four frames deep."),
+                new LessonStep(3, StepKind.Throw, "ArithmeticException",
+                    "10 / 0 is illegal, so divide throws an ArithmeticException."),
+                new LessonStep(3, StepKind.Unwind, "",
+                    "divide has no catch, so its frame is discarded and the exception moves to its caller, calculateTotal."),
+                new LessonStep(2, StepKind.Unwind, "",
+                    "calculateTotal has no catch either, so its frame is discarded and the exception moves to checkout."),
+                new LessonStep(4, StepKind.Catch, "",
+                    "checkout has a catch for ArithmeticException, so the exception is caught here and the search stops."),
+                new LessonStep(5, StepKind.Print, "Handled",
+                    "The catch block prints Handled."),
+                new LessonStep(0, StepKind.Return, "",
+                    "checkout finishes normally and returns to main."),
+                new LessonStep(6, StepKind.Print, "End",
+                    "main carries on and prints End.")
+            },
+            questions = new[]
+            {
+                new LessonQuestion(4, "divide has no catch. Where does the exception go first?",
+                    new[] { "To calculateTotal, its caller", "Straight to main", "It disappears" }, 0),
+                new LessonQuestion(5, "calculateTotal has no catch either. Where does the exception go next?",
+                    new[] { "To checkout, its caller", "Back into divide", "It stops here" }, 0),
+                new LessonQuestion(6, "checkout has a matching catch. What happens to the exception?",
+                    new[] { "It is caught and handled", "It passes on to main", "It crashes the program" }, 0),
+                new LessonQuestion(9, "The exception was handled in checkout. Does main still print End?",
+                    new[] { "Yes, the program carries on", "No, the program crashes", "Only after a restart" }, 0)
             }
         };
     }
