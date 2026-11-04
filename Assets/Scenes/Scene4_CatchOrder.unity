@@ -450,7 +450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 635b7afacd071ad43bafa637dd1ddc7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LessonController
-  lessonId: 2
+  lessonId: 3
   stage: {fileID: 198773509}
   codeText: {fileID: 1145264980}
   codeTitle: {fileID: 1670041291}
