@@ -62,7 +62,9 @@ public static class Lessons
             case LessonId.Scene1_NormalFlow: return NormalFlow();
             case LessonId.Scene2_TryCatch: return TryCatch();
             case LessonId.Scene3_Propagation: return Propagation();
-            default: return NormalFlow();   // scenes 2 to 5 are added later
+            case LessonId.Scene4_CatchOrder: return CatchOrder();
+            case LessonId.Scene5_Finally: return FinallyChallenge();
+            default: return NormalFlow();
         }
     }
 
@@ -208,6 +210,105 @@ public static class Lessons
                     new[] { "It is caught and handled", "It passes on to main", "It crashes the program" }, 0),
                 new LessonQuestion(9, "The exception was handled in checkout. Does main still print End?",
                     new[] { "Yes, the program carries on", "No, the program crashes", "Only after a restart" }, 0)
+            }
+        };
+    }
+    private static Lesson CatchOrder()
+    {
+        return new Lesson
+        {
+            title = "Catch order",
+            rootFrame = "main()",
+            rootHasTry = true,
+            code = new[]
+            {
+                "try { r = divide(10, 0); }",
+                "catch (NullPointerException e) { print(\"Null\"); }",
+                "catch (ArithmeticException e) { print(\"Math\"); }",
+                "catch (Exception e) { print(\"Other\"); }",
+                "print(\"End\");"
+            },
+            steps = new[]
+            {
+                new LessonStep(0, StepKind.Call, "divide(10, 0)",
+                    "main enters the try block and calls divide with b = 0."),
+                new LessonStep(0, StepKind.Throw, "ArithmeticException",
+                    "divide throws an ArithmeticException."),
+                new LessonStep(0, StepKind.Unwind, "",
+                    "divide has no catch, so the exception moves to main. main now checks its catch blocks from top to bottom."),
+                new LessonStep(1, StepKind.Note, "",
+                    "First catch: NullPointerException. An ArithmeticException is not a NullPointerException, so this catch does not match and is skipped."),
+                new LessonStep(2, StepKind.Catch, "",
+                    "Second catch: ArithmeticException. It matches, so the exception is caught here."),
+                new LessonStep(2, StepKind.Print, "Math",
+                    "The matching catch block runs and prints Math."),
+                new LessonStep(-1, StepKind.Note, "",
+                    "The third catch, Exception, is never checked. The first matching catch wins and the rest are skipped."),
+                new LessonStep(4, StepKind.Print, "End",
+                    "The program carries on and prints End."),
+                new LessonStep(-1, StepKind.Note, "",
+                    "Order matters: if catch (Exception e) came first, it would catch everything and the specific catches below it could never run. Java rejects that code.")
+            },
+            questions = new[]
+            {
+                new LessonQuestion(3, "main checks its catches from the top. Does catch (NullPointerException) match an ArithmeticException?",
+                    new[] { "No, so it is skipped", "Yes, it catches everything", "Yes, because both are errors" }, 0),
+                new LessonQuestion(6, "The ArithmeticException catch has run. Will the Exception catch below it run too?",
+                    new[] { "No, only the first matching catch runs", "Yes, it runs next", "Yes, but only if it is listed first" }, 0),
+                new LessonQuestion(8, "What if catch (Exception e) were listed first?",
+                    new[] { "It would catch the exception first, so the others could never run", "The ArithmeticException catch would still run first", "Nothing would change" }, 0)
+            }
+        };
+    }
+    private static Lesson FinallyChallenge()
+    {
+        return new Lesson
+        {
+            title = "finally and the challenge",
+            rootFrame = "main()",
+            rootHasTry = true,
+            code = new[]
+            {
+                "try { print(\"A\");",
+                "    r = divide(10, 0);",
+                "    print(\"B\");",
+                "} catch (ArithmeticException e) {",
+                "    print(\"C\");",
+                "} finally {",
+                "    print(\"D\"); }",
+                "print(\"E\");"
+            },
+            steps = new[]
+            {
+                new LessonStep(0, StepKind.Print, "A",
+                    "main enters the try block and prints A."),
+                new LessonStep(1, StepKind.Call, "divide(10, 0)",
+                    "main calls divide with b = 0."),
+                new LessonStep(1, StepKind.Throw, "ArithmeticException",
+                    "divide throws an ArithmeticException."),
+                new LessonStep(1, StepKind.Unwind, "",
+                    "divide has no catch, so the exception moves to main."),
+                new LessonStep(3, StepKind.Catch, "",
+                    "main's catch matches, so the exception is caught. The rest of the try block, print(\"B\"), is skipped."),
+                new LessonStep(4, StepKind.Print, "C",
+                    "The catch block prints C."),
+                new LessonStep(5, StepKind.Finally, "",
+                    "The finally block runs next. It always runs, whether or not an exception happened."),
+                new LessonStep(6, StepKind.Print, "D",
+                    "finally prints D."),
+                new LessonStep(7, StepKind.Print, "E",
+                    "The program continues after try, catch and finally and prints E. The full output is A C D E.")
+            },
+            questions = new[]
+            {
+                new LessonQuestion(4, "main has a matching catch. What happens to print(\"B\")?",
+                    new[] { "It is skipped", "It runs after the catch", "It runs before the catch" }, 0),
+                new LessonQuestion(6, "The catch block has finished. What runs next?",
+                    new[] { "The finally block", "print(\"E\")", "Nothing, the program ends" }, 0),
+                new LessonQuestion(7, "Would finally still run if no exception had been thrown?",
+                    new[] { "Yes, finally always runs", "No, only after an exception", "Only if there is a catch" }, 0),
+                new LessonQuestion(8, "What is the full output of this program?",
+                    new[] { "A C D E", "A B D E", "A C E" }, 0)
             }
         };
     }
