@@ -1,0 +1,383 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277c13cba0df611468690075a5c0e048, type: 3}
+  m_Name: QuestionBank
+  m_EditorClassIdentifier: Assembly-CSharp::QuestionBank
+  questions:
+  - id: A1
+    set: A
+    objective: 2
+    text: 'What is printed?
+
+
+      try { print("1"); int x = 5 / 0; print("2"); }
+
+      catch (ArithmeticException e) { print("3"); }
+
+      print("4");'
+    options:
+    - 1 3 4
+    - 1 2 3 4
+    - 1 3
+    - 1 2 4
+    correct: 0
+    explanation: 5 / 0 throws an exception, so print("2") is skipped. The catch prints 3 and the program then continues with 4.
+  - id: A2
+    set: A
+    objective: 2
+    text: 'What is printed?
+
+
+      try { print("A"); print("B"); }
+
+      catch (Exception e) { print("C"); }
+
+      finally { print("D"); }'
+    options:
+    - A B D
+    - A B
+    - A B C D
+    - A D
+    correct: 0
+    explanation: No exception is thrown, so the catch is skipped. The finally block always runs.
+  - id: A3
+    set: A
+    objective: 1
+    text: An exception is thrown part-way through a try block that has a matching catch and a finally block. Which parts run, and in what order?
+    options:
+    - The try block up to the error, then the catch, then the finally
+    - The whole try block, then the catch, then the finally
+    - Only the catch block
+    - The try block up to the error, then only the finally
+    correct: 0
+    explanation: The try block stops at the error. The matching catch handles it, and finally runs last.
+  - id: A4
+    set: A
+    objective: 1
+    text: "What is printed?\n\nvoid f() {\n  try { throw new ArithmeticException(); }\n  catch (NullPointerException e) { print(\"N\"); }\n  finally { print(\"F\"); }\n}\n\nmain: try { f(); } catch (Exception e) { print(\"M\"); }"
+    options:
+    - F M
+    - N F M
+    - M
+    - F
+    correct: 0
+    explanation: The catch in f does not match, so the exception leaves f, but f's finally still runs first (F). Then main's catch handles it (M).
+  - id: A5
+    set: A
+    objective: 3
+    text: main calls a(), a() calls b(), and b() throws an exception. Only main has a matching catch. What happens to the frames of b() and a()?
+    options:
+    - They are discarded one by one as the exception moves up to main
+    - They keep running after the exception
+    - Only b() is discarded and a() carries on
+    - They stay on the stack until main finishes
+    correct: 0
+    explanation: 'An unhandled exception unwinds the call stack: each method without a matching catch is discarded until a handler is found.'
+  - id: A6
+    set: A
+    objective: 3
+    text: An ArithmeticException is thrown and no method in the call chain has a catch for it. What happens?
+    options:
+    - The program ends with an error message
+    - The exception is ignored and the program carries on
+    - Execution continues on the line after the throw
+    - The last method called catches it automatically
+    correct: 0
+    explanation: If no method handles the exception, it leaves the top of the call stack and the program terminates.
+  - id: A7
+    set: A
+    objective: 4
+    text: 'What is printed?
+
+
+      try { String s = null; s.length(); }
+
+      catch (ArithmeticException e) { print("1"); }
+
+      catch (NullPointerException e) { print("2"); }
+
+      catch (Exception e) { print("3"); }'
+    options:
+    - 2
+    - 1
+    - 3
+    - 2 3
+    correct: 0
+    explanation: Using a null reference throws a NullPointerException. The first matching catch (the second one) runs, and the remaining catches are skipped.
+  - id: A8
+    set: A
+    objective: 4
+    text: 'This code does not compile:
+
+
+      try { ... }
+
+      catch (Exception e) { ... }
+
+      catch (ArithmeticException e) { ... }
+
+
+      What is the correct fix?'
+    options:
+    - Put the ArithmeticException catch before the Exception catch
+    - Remove the try block
+    - Put the finally block first
+    - Change both catches to catch (Exception e)
+    correct: 0
+    explanation: A general catch placed first catches everything, so the specific catch below it could never run. Specific catches must come first.
+  - id: A9
+    set: A
+    objective: 5
+    text: A method readConfig() fails when a file is missing. main() can show the user a clear message, but readConfig() cannot. Where should the exception be caught?
+    options:
+    - In main(), which can show the message
+    - Inside readConfig(), by ignoring it silently
+    - Nowhere, so the program crashes
+    - In every method in the chain
+    correct: 0
+    explanation: Catch an exception where you can do something useful about it, not necessarily where it happens.
+  - id: A10
+    set: A
+    objective: 5
+    text: Why is an empty catch block, such as catch (Exception e) { }, usually a bad idea?
+    options:
+    - It hides the error, so the problem goes unnoticed
+    - It makes the program run slower
+    - It stops the finally block from running
+    - The compiler does not allow it
+    correct: 0
+    explanation: An empty catch swallows the error silently, which makes bugs very hard to find.
+  - id: A11
+    set: A
+    objective: 2
+    text: 'What is printed?
+
+
+      void f() { print("1"); int x = 1 / 0; print("2"); }
+
+
+      main: try { f(); print("3"); }
+
+      catch (ArithmeticException e) { print("4"); }
+
+      print("5");'
+    options:
+    - 1 4 5
+    - 1 2 3 4 5
+    - 1 3 5
+    - 1 4
+    correct: 0
+    explanation: f prints 1, then 1 / 0 throws. The exception leaves f, skips print("3") in the try block, and main's catch prints 4. The program then continues with 5.
+  - id: A12
+    set: A
+    objective: 1
+    text: 'What is printed?
+
+
+      try { print("A"); throw new RuntimeException(); }
+
+      catch (RuntimeException e) { print("B"); }
+
+      finally { print("C"); }
+
+      print("D");'
+    options:
+    - A B C D
+    - A C B D
+    - A B D
+    - A B C
+    correct: 0
+    explanation: try runs up to the throw (A), the catch handles it (B), finally always runs next (C), then the program continues (D).
+  - id: B1
+    set: B
+    objective: 2
+    text: 'What is printed?
+
+
+      try { print("X"); int v = 8 / 0; print("Y"); }
+
+      catch (ArithmeticException e) { print("Z"); }
+
+      print("W");'
+    options:
+    - X Z W
+    - X Y Z W
+    - X Z
+    - X Y W
+    correct: 0
+    explanation: 8 / 0 throws an exception, so print("Y") is skipped. The catch prints Z and the program then continues with W.
+  - id: B2
+    set: B
+    objective: 2
+    text: 'What is printed?
+
+
+      try { print("P"); print("Q"); }
+
+      catch (Exception e) { print("R"); }
+
+      finally { print("S"); }'
+    options:
+    - P Q S
+    - P Q
+    - P Q R S
+    - P S
+    correct: 0
+    explanation: No exception is thrown, so the catch is skipped. The finally block always runs.
+  - id: B3
+    set: B
+    objective: 1
+    text: A statement inside a try block throws an exception. The try has a matching catch and a finally block. What is the order of execution?
+    options:
+    - Try (up to the error), catch, finally
+    - Try (all of it), catch, finally
+    - Catch only
+    - Try (up to the error), finally only
+    correct: 0
+    explanation: The try block stops at the error. The matching catch handles it, and finally runs last.
+  - id: B4
+    set: B
+    objective: 1
+    text: "What is printed?\n\nvoid g() {\n  try { throw new ArithmeticException(); }\n  catch (IllegalStateException e) { print(\"S\"); }\n  finally { print(\"T\"); }\n}\n\nmain: try { g(); } catch (Exception e) { print(\"U\"); }"
+    options:
+    - T U
+    - S T U
+    - U
+    - T
+    correct: 0
+    explanation: The catch in g does not match, so the exception leaves g, but g's finally still runs first (T). Then main's catch handles it (U).
+  - id: B5
+    set: B
+    objective: 3
+    text: main calls x(), x() calls y(), and y() throws an exception. Only main has a matching catch. What happens to the frames of y() and x()?
+    options:
+    - They are discarded one by one as the exception moves up to main
+    - They keep running after the exception
+    - Only y() is discarded and x() carries on
+    - They stay on the stack until main finishes
+    correct: 0
+    explanation: 'An unhandled exception unwinds the call stack: each method without a matching catch is discarded until a handler is found.'
+  - id: B6
+    set: B
+    objective: 3
+    text: An exception is thrown and no method in the call chain has a matching catch for it. What happens to the program?
+    options:
+    - The program ends with an error message
+    - The exception is ignored and the program carries on
+    - Execution continues on the line after the throw
+    - The first method called catches it automatically
+    correct: 0
+    explanation: If no method handles the exception, it leaves the top of the call stack and the program terminates.
+  - id: B7
+    set: B
+    objective: 4
+    text: 'What is printed?
+
+
+      try { Integer.parseInt("abc"); }
+
+      catch (NullPointerException e) { print("1"); }
+
+      catch (ArithmeticException e) { print("2"); }
+
+      catch (Exception e) { print("3"); }'
+    options:
+    - 3
+    - 1
+    - 2
+    - 2 3
+    correct: 0
+    explanation: Parsing "abc" throws a NumberFormatException. It matches neither of the first two catches, so the general catch (Exception) handles it.
+  - id: B8
+    set: B
+    objective: 4
+    text: 'This code does not compile:
+
+
+      try { ... }
+
+      catch (Throwable t) { ... }
+
+      catch (NullPointerException e) { ... }
+
+
+      What is the correct fix?'
+    options:
+    - Put the NullPointerException catch before the Throwable catch
+    - Delete the try block
+    - Add a finally block after both catches
+    - Change the NullPointerException catch to catch (Throwable t)
+    correct: 0
+    explanation: A general catch placed first catches everything, so the specific catch below it could never run. Specific catches must come first.
+  - id: B9
+    set: B
+    objective: 5
+    text: A method saveOrder() fails when the database is offline. The checkout screen code can tell the user to try again, but saveOrder() cannot. Where should the exception be caught?
+    options:
+    - In the checkout code, which can tell the user
+    - Inside saveOrder(), by ignoring it silently
+    - Nowhere, so the program crashes
+    - In every method in the chain
+    correct: 0
+    explanation: Catch an exception where you can do something useful about it, not necessarily where it happens.
+  - id: B10
+    set: B
+    objective: 5
+    text: What is the main danger of writing catch (Exception e) { } with nothing inside it?
+    options:
+    - The error is hidden and nobody notices the problem
+    - The program always crashes anyway
+    - The finally block is skipped
+    - The code will not compile
+    correct: 0
+    explanation: An empty catch swallows the error silently, which makes bugs very hard to find.
+  - id: B11
+    set: B
+    objective: 2
+    text: 'What is printed?
+
+
+      void g() { print("a"); int x = 2 / 0; print("b"); }
+
+
+      main: try { g(); print("c"); }
+
+      catch (ArithmeticException e) { print("d"); }
+
+      print("e");'
+    options:
+    - a d e
+    - a b c d e
+    - a c e
+    - a d
+    correct: 0
+    explanation: g prints a, then 2 / 0 throws. The exception leaves g, skips print("c") in the try block, and main's catch prints d. The program then continues with e.
+  - id: B12
+    set: B
+    objective: 1
+    text: 'What is printed?
+
+
+      try { print("K"); throw new RuntimeException(); }
+
+      catch (RuntimeException e) { print("L"); }
+
+      finally { print("M"); }
+
+      print("N");'
+    options:
+    - K L M N
+    - K M L N
+    - K L N
+    - K L M
+    correct: 0
+    explanation: try runs up to the throw (K), the catch handles it (L), finally always runs next (M), then the program continues (N).
