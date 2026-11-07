@@ -309,8 +309,11 @@ public class ExceptionStage : MonoBehaviour
 
         GameObject body = Instantiate(framePrefab, f.root.transform);
         body.transform.localPosition = Vector3.zero;
-        body.transform.localScale = new Vector3(frameWidth, frameHeight, frameDepth);
-        f.body = body.GetComponent<Renderer>();
+        MeshFilter mf = body.GetComponentInChildren<MeshFilter>();
+        Vector3 size = mf != null ? mf.sharedMesh.bounds.size : Vector3.one;
+        body.transform.localScale = new Vector3(
+            frameWidth / size.x, frameHeight / size.y, frameDepth / size.z);
+        f.body = body.GetComponentInChildren<Renderer>();
         f.color = hasTry
             ? new Color(0.2f, 0.78f, 0.75f)
             : Color.HSVToRGB(Mathf.Repeat(0.58f + index * 0.08f, 1f), 0.55f, 1f);
@@ -347,7 +350,7 @@ public class ExceptionStage : MonoBehaviour
         token.name = "Token";
         token.transform.localPosition = localPos;
         token.transform.localScale = Vector3.one * tokenSize;
-        token.GetComponent<Renderer>().material.color = ErrorRed;
+        token.GetComponentInChildren<Renderer>().material.color = ErrorRed;
 
         var go = new GameObject("TokenLabel");
         go.transform.SetParent(stageRoot, false);
